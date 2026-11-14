@@ -1,0 +1,49 @@
+{
+  "projectId": "72236819",
+  "functions": {
+    "admin-remove-user": {
+      "hasChanged": false,
+      "hash": "727a969fe49572bd6e4159dffec33644df7471429b3e55d26c3bffcdb7a527a2"
+    },
+    "daily-mock": {
+      "hasChanged": false,
+      "hash": "c497b81192801e82cf0b7372d24d94a650805903a16ee15c82723f667c37c9a0"
+    },
+    "exam": {
+      "hasChanged": false,
+      "hash": "29ca449c6ea3b75690f030735950cb5182a96f17350141331eefe30761047028"
+    },
+    "generate-ai-questions": {
+      "hasChanged": false,
+      "hash": "47b9c8a58baede59a16a4138387a8938c5e710b52fa537e81ca8ffc3ea7b6ec3"
+    },
+    "guardian-consent": {
+      "hasChanged": false,
+      "hash": "600863d09bbf6426c640dfc69fc34978189a4acba2434bbda317ebca40f9af25"
+    },
+    "import-questions": {
+      "hasChanged": false,
+      "hash": "58920f3d8687300c8fb481c6674f4efe6841aef1d4d0270ffb0deea7aa50540b"
+    },
+    "mistake-reattempt": {
+      "hasChanged": false,
+      "hash": "afbe98d1e2e28d4badd6878a3356f41b5c47c924ea12f136449f0197655a2fd2"
+    },
+    "razorpay-order": {
+      "hasChanged": false,
+      "hash": "9842f89957540432d4ab5f4c0f391d9c5e5dac4220e99055d9af9267e761123e"
+    },
+    "razorpay-webhook": {
+      "hasChanged": false,
+      "hash": "272cb489e4f9adc5d91edfac51a8193550e33e4ab12b4d89a9972fe8973e30f4"
+    },
+    "self-delete-user": {
+      "hasChanged": false,
+      "hash": "9fdb8827ddd189a3d782039148fb227800ba6fb55c4f549a3b667143779a3d1d"
+    },
+    "support-notify": {
+      "hasChanged": false,
+      "hash": "5e00a0a0e927864c21b4cd146cb5b78aa8d3f1f4ed767f08d7ed76ec79938dfe"
+    }
+  }
+}

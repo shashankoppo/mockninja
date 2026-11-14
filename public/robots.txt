@@ -1,0 +1,11 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /dashboard
+Disallow: /exam
+Disallow: /settings
+Disallow: /billing
+Disallow: /checkout
+Disallow: /dev
+
+Sitemap: https://mockninja.in/sitemap.xml

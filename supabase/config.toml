@@ -1,0 +1,32 @@
+[functions.guardian-consent]
+verify_jwt = true
+
+[functions.admin-remove-user]
+verify_jwt = true
+
+[functions.exam]
+verify_jwt = true
+
+[functions.daily-mock]
+verify_jwt = true
+
+[functions.mistake-reattempt]
+verify_jwt = true
+
+[functions.support-notify]
+verify_jwt = false
+
+[functions.generate-ai-questions]
+verify_jwt = true
+
+[functions.self-delete-user]
+verify_jwt = true
+
+[functions.import-questions]
+verify_jwt = true
+
+[functions.razorpay-order]
+verify_jwt = true
+
+[functions.razorpay-webhook]
+verify_jwt = false
