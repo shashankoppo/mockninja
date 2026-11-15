@@ -76,16 +76,22 @@ docker run -d -p 8080:8080 --name mock-ninja --restart unless-stopped mock-ninja
 
 Coolify builds the Dockerfile directly — no extra config file needed.
 
-1. Create a new resource → **Dockerfile** → point it at this repository.
-2. Set these **environment variables** in the app settings (build-time):
+1. Create a new resource → **Dockerfile** (or Docker Compose) → point it at this repository.
+2. Add these **environment variables** in the app settings (they are needed at
+   build time — without them the deployed site cannot reach Supabase):
    - `VITE_SUPABASE_URL`
    - `VITE_SUPABASE_ANON_KEY`
-3. Set the **port expose** field to `8080` (the container's default listen port).
-   To change the listen port at runtime, also set a `PORT` environment variable —
-   nginx renders its config from it on container start, and the health check follows it.
+3. Set the **port expose** field to `3000` (the container's default listen
+   port). The container does not publish a host port, so it can never clash
+   with Coolify's own proxy. To change the listen port, set a `PORT`
+   environment variable and update the expose field to match.
 4. Enable the built-in health check, or rely on the Dockerfile's own
    `HEALTHCHECK` (Coolify shows the container as healthy automatically).
 5. Deploy. Coolify handles the domain, TLS certificate, and reverse proxy.
+
+**Standalone Docker Compose on a server (no proxy):** edit `docker-compose.yml`
+and change the `expose:` block back to a host binding, e.g.
+`ports: ["8080:3000"]` — container listens on 3000, host serves on 8080.
 
 ### Option D: Static hosting (Vercel, Netlify, Cloudflare Pages)
 

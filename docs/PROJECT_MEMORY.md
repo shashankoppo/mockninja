@@ -1319,3 +1319,10 @@ Added ability for admins to enable/disable email OTP verification from the admin
 - Added: a Coolify deployment section to DEPLOYMENT.md (Dockerfile-based resource, build-time Supabase variables, port expose, health check).
 - Launch status: production build passes; database holds 109 published questions, 3 public mocks, 6 plans, maintenance off, 2 active cron jobs; all 11 edge functions active. Payment and AI secrets could not be listed from this session.
 - Verification: npm run build passed. Docker image not built in this environment.
+
+## 2026-11-15 Coolify deploy fix: no host port binding, container port moved off 8080
+
+- Fixed: the first Coolify deployment failed because the container tried to bind host port 8080, which Coolify's own proxy already occupies. The compose file now uses `expose` (internal network only) instead of `ports`, so the proxy reaches the container without a host binding and the clash cannot recur. Container default listen port moved to 3000 (still follows the PORT variable).
+- Note: the deploy log also showed the Supabase build variables were empty. The two VITE_SUPABASE_* environment variables must be added in the Coolify app settings before the next deploy, or the built site cannot reach Supabase.
+- Key files: docker-compose.yml, Dockerfile, DEPLOYMENT.md.
+- Verification: npm run build passed. Re-deploy in Coolify still pending (user action).
