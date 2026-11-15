@@ -1310,3 +1310,12 @@ Added ability for admins to enable/disable email OTP verification from the admin
 2. Checkout: the payment request read the sign-in token from the wrong level of the session response, so the order request was sent without a valid token. It now reads the session token and shows a "sign in again" message if the session has expired.
 
 **Verification:** typecheck is clean (0 errors, down from 13); production build passed.
+
+## 2026-11-15 Launch packaging: configurable container port and Coolify deployment
+
+- Built: nginx inside the Docker image now listens on the PORT environment variable instead of a hard-baked 8080. The config is shipped as a template rendered at container start, so Coolify and similar platforms can point their proxy at any port without rebuilding the image. The container health check follows the same variable. Defaults to 8080 everywhere when PORT is unset.
+- Built: docker-compose passes PORT into the container and maps the matching host port; health check reads it too.
+- Added: missing RAZORPAY_WEBHOOK_SECRET to the environment template (required by the payment webhook, was absent).
+- Added: a Coolify deployment section to DEPLOYMENT.md (Dockerfile-based resource, build-time Supabase variables, port expose, health check).
+- Launch status: production build passes; database holds 109 published questions, 3 public mocks, 6 plans, maintenance off, 2 active cron jobs; all 11 edge functions active. Payment and AI secrets could not be listed from this session.
+- Verification: npm run build passed. Docker image not built in this environment.

@@ -12,7 +12,7 @@ Independent practice platform. Not affiliated with NTA.
 
 1. Create `.env` as above.
 2. Run `docker compose up --build`.
-3. Open `http://localhost:8080`.
+3. Open `http://localhost:8080` (or the `PORT` you set).
 
 The Supabase values are baked into the build, so rebuild the image after changing them. Set `PORT` in `.env` to use a different host port.
 

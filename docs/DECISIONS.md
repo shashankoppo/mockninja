@@ -188,3 +188,5 @@
 2026-11-12 | AI provider is chosen from platform settings; keys stay in server secrets | Admins can switch between Gemini and OpenAI and change model and prices without a code change. Provider keys are read only inside the edge function and never sent to the browser. | ACTIVE
 2026-11-12 | Only ADMIN may run AI generation | The EDITOR role was retired; the generator follows the same staff rule as the rest of the admin area. | ACTIVE
 2026-11-12 | Usage ledger is written only by the server | Client roles lose insert, update, and delete on `ai_usage_ledger` so spend records cannot be altered from the browser. | ACTIVE
+
+2026-11-15 | Container listens on the PORT environment variable | Coolify and similar platforms expect to control the listen port without a rebuild; nginx renders its config from the variable at startup and the health check follows it. Default 8080 preserved. | ACTIVE

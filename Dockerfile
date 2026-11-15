@@ -17,10 +17,13 @@ FROM nginx:1.27-alpine
 
 RUN apk add --no-cache curl
 
-COPY docker/nginx.conf /etc/nginx/conf.d/default.conf
+# The official nginx image renders /etc/nginx/templates/*.template with
+# envsubst at startup, so the listen port follows the PORT environment var.
+COPY docker/nginx.conf.template /etc/nginx/templates/default.conf.template
 COPY --from=build /app/dist /usr/share/nginx/html
 
+ENV PORT=8080
 EXPOSE 8080
 
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-  CMD curl -f http://localhost:8080/ || exit 1
+  CMD curl -f http://localhost:$PORT/ || exit 1

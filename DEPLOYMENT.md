@@ -72,7 +72,22 @@ docker build \
 docker run -d -p 8080:8080 --name mock-ninja --restart unless-stopped mock-ninja
 ```
 
-### Option C: Static hosting (Vercel, Netlify, Cloudflare Pages)
+### Option C: Coolify
+
+Coolify builds the Dockerfile directly — no extra config file needed.
+
+1. Create a new resource → **Dockerfile** → point it at this repository.
+2. Set these **environment variables** in the app settings (build-time):
+   - `VITE_SUPABASE_URL`
+   - `VITE_SUPABASE_ANON_KEY`
+3. Set the **port expose** field to `8080` (the container's default listen port).
+   To change the listen port at runtime, also set a `PORT` environment variable —
+   nginx renders its config from it on container start, and the health check follows it.
+4. Enable the built-in health check, or rely on the Dockerfile's own
+   `HEALTHCHECK` (Coolify shows the container as healthy automatically).
+5. Deploy. Coolify handles the domain, TLS certificate, and reverse proxy.
+
+### Option D: Static hosting (Vercel, Netlify, Cloudflare Pages)
 
 ```bash
 # Build the frontend
