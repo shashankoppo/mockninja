@@ -22,12 +22,11 @@ Create a `.env` file in the project root:
 # Required — from Supabase dashboard → Settings → API
 VITE_SUPABASE_URL=https://your-project.supabase.co
 VITE_SUPABASE_ANON_KEY=your-anon-key
-
-# Optional — port for the Docker container (default 8080)
-PORT=8080
 ```
 
 These are build-time variables (baked into the frontend bundle). They are safe to expose to the browser — the anon key is designed to be public, and RLS policies protect your data.
+
+The container always listens on **port 8063**. No port variable is needed.
 
 ## Supabase Dashboard Configuration
 
@@ -47,7 +46,46 @@ Set these as Supabase secrets (Dashboard → Edge Functions → Secrets):
 
 ## Deployment Steps
 
-### Option A: Docker Compose (recommended)
+### Option A: Coolify (recommended)
+
+Full setup, step by step:
+
+**Step 1 — Push the code to GitHub.** Coolify deploys from a Git
+repository, so commit this project and push it to GitHub (or any Git
+host) first.
+
+**Step 2 — Create the app in Coolify.**
+1. In your Coolify dashboard: **New Resource → Docker Compose**.
+2. Select your Git repository and the `main` branch.
+3. Coolify reads the `docker-compose.yml` in the repo root automatically.
+
+**Step 3 — Add the two environment variables.** In the app's
+**Environment Variables** section, add:
+- `VITE_SUPABASE_URL` = your Supabase project URL
+- `VITE_SUPABASE_ANON_KEY` = your Supabase anon key
+
+Both come from **Supabase dashboard → Settings → API**. These are needed
+at build time — without them the deployed site cannot load any data.
+
+**Step 4 — Set the port.** In the app settings, find the **Port exposes**
+field and enter `8063`. That is the only port number in the whole setup.
+
+**Step 5 — Set the domain.** In the **Domains** section, enter your
+public address (for example `https://mockninja.in`) and enable **Let's
+Encrypt** so Coolify issues the SSL certificate automatically.
+
+**Step 6 — Deploy.** Click **Deploy**. The first build takes a few
+minutes. When it finishes, Coolify shows the container as healthy and
+your domain serves the app.
+
+Notes:
+- The container never publishes a host port, so it can never clash with
+  Coolify's own proxy — the earlier "port 8080 already allocated" failure
+  cannot happen with this setup.
+- Changing the Supabase variables later requires a **rebuild** (Redeploy
+  with cache cleared), because they are baked into the app at build time.
+
+### Option B: Docker Compose (own server)
 
 ```bash
 # 1. Create .env file with your Supabase URL and anon key
@@ -58,10 +96,10 @@ cp .env.example .env
 docker compose up -d --build
 
 # 3. Verify it's running
-curl http://localhost:8080/
+curl http://localhost:8063/
 ```
 
-### Option B: Standalone Docker
+### Option C: Standalone Docker
 
 ```bash
 docker build \
@@ -69,29 +107,8 @@ docker build \
   --build-arg VITE_SUPABASE_ANON_KEY=your-anon-key \
   -t mock-ninja .
 
-docker run -d -p 8080:8080 --name mock-ninja --restart unless-stopped mock-ninja
+docker run -d -p 8063:8063 --name mock-ninja --restart unless-stopped mock-ninja
 ```
-
-### Option C: Coolify
-
-Coolify builds the Dockerfile directly — no extra config file needed.
-
-1. Create a new resource → **Dockerfile** (or Docker Compose) → point it at this repository.
-2. Add these **environment variables** in the app settings (they are needed at
-   build time — without them the deployed site cannot reach Supabase):
-   - `VITE_SUPABASE_URL`
-   - `VITE_SUPABASE_ANON_KEY`
-3. Set the **port expose** field to `3000` (the container's default listen
-   port). The container does not publish a host port, so it can never clash
-   with Coolify's own proxy. To change the listen port, set a `PORT`
-   environment variable and update the expose field to match.
-4. Enable the built-in health check, or rely on the Dockerfile's own
-   `HEALTHCHECK` (Coolify shows the container as healthy automatically).
-5. Deploy. Coolify handles the domain, TLS certificate, and reverse proxy.
-
-**Standalone Docker Compose on a server (no proxy):** edit `docker-compose.yml`
-and change the `expose:` block back to a host binding, e.g.
-`ports: ["8080:3000"]` — container listens on 3000, host serves on 8080.
 
 ### Option D: Static hosting (Vercel, Netlify, Cloudflare Pages)
 
@@ -149,7 +166,7 @@ Current edge functions:
 
 ## Health Check
 
-The Docker container includes a health check at `http://localhost:8080/`. Monitor with:
+The Docker container includes a health check at `http://localhost:8063/`. Monitor with:
 
 ```bash
 docker compose ps   # shows health status

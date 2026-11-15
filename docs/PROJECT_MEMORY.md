@@ -1326,3 +1326,10 @@ Added ability for admins to enable/disable email OTP verification from the admin
 - Note: the deploy log also showed the Supabase build variables were empty. The two VITE_SUPABASE_* environment variables must be added in the Coolify app settings before the next deploy, or the built site cannot reach Supabase.
 - Key files: docker-compose.yml, Dockerfile, DEPLOYMENT.md.
 - Verification: npm run build passed. Re-deploy in Coolify still pending (user action).
+
+## 2026-11-15 Simplified Coolify deployment: fixed port 8063
+
+- Built: The container now listens on a fixed port 8063 baked into the Dockerfile and nginx config. The PORT environment variable was removed entirely — it caused confusion in the first Coolify attempt (blank build variables plus a host-port clash with Coolify's proxy on 8080). The compose file keeps `expose` (internal network only) so a host-port clash cannot recur.
+- Built: DEPLOYMENT.md now opens with a six-step Coolify walkthrough: push to GitHub, New Resource → Docker Compose, add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY in Environment Variables, set Port exposes to 8063, set the domain with Let's Encrypt, deploy.
+- Key files: Dockerfile, docker/nginx.conf, docker-compose.yml, DEPLOYMENT.md, README.md, .env.example. The nginx.conf.template approach was removed (fixed port needs no startup rendering).
+- Verification: npm run build passed. Docker image not built in this environment; user redeploys in Coolify.

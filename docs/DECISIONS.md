@@ -192,3 +192,5 @@
 2026-11-15 | Container listens on the PORT environment variable | Coolify and similar platforms expect to control the listen port without a rebuild; nginx renders its config from the variable at startup and the health check follows it. Default 8080 preserved. | ACTIVE
 
 2026-11-15 | Container exposes its port on the internal network only | Coolify's proxy occupies host 8080 and any host binding from an app can clash with it or other apps. The proxy reaches the container over the internal network through `expose`, so deployment works without port juggling. Default listen port 3000; PORT variable still honored. | ACTIVE
+
+2026-11-15 | Container listens on fixed port 8063; PORT variable removed | A single fixed port removes a whole class of deploy mistakes (empty build vars, proxy clashes). The container exposes internally only, so Coolify's proxy never conflicts. | ACTIVE

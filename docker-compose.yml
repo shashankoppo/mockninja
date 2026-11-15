@@ -5,18 +5,11 @@ services:
       args:
         VITE_SUPABASE_URL: ${VITE_SUPABASE_URL}
         VITE_SUPABASE_ANON_KEY: ${VITE_SUPABASE_ANON_KEY}
-    environment:
-      # nginx inside the container listens on this port (rendered at startup).
-      # Coolify's own proxy occupies host port 8080, so the default listen
-      # port inside the container is moved off 8080.
-      PORT: ${PORT:-3000}
     expose:
-      # Coolify's proxy reaches the container through the internal network;
-      # no host port binding means no clash with the proxy or other apps.
-      - "${PORT:-3000}"
+      - "8063"
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "sh", "-c", "curl -f http://localhost:$${PORT}/"]
+      test: ["CMD", "curl", "-f", "http://localhost:8063/"]
       interval: 30s
       timeout: 5s
       retries: 3
