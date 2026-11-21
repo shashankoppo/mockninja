@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { Sparkles } from 'lucide-react';
+import { Sparkles, FileText, ClipboardList } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/lib/supabase';
@@ -15,19 +15,32 @@ interface ChapterOption {
 interface GenerateResult {
   job_id: string;
   status: 'SUCCEEDED' | 'FAILED';
+  mode: 'questions' | 'dpp' | 'mock_test';
   created: number;
   skipped: number;
+  mock_test_id?: string | null;
   message: string;
 }
 
+type GenMode = 'questions' | 'dpp' | 'mock_test';
+
 const selectClass = 'w-full rounded-lg border border-navy-200 bg-white px-3 py-2 text-sm text-navy-900';
+
+const MODE_TABS: { mode: GenMode; label: string; icon: typeof Sparkles; hint: string }[] = [
+  { mode: 'questions', label: 'Questions', icon: Sparkles, hint: 'Generate questions for review' },
+  { mode: 'dpp', label: 'DPP', icon: FileText, hint: 'Create a daily practice problem set' },
+  { mode: 'mock_test', label: 'Mock Test', icon: ClipboardList, hint: 'Create a full mock test draft' },
+];
 
 export function AiGenerateForm() {
   const queryClient = useQueryClient();
+  const [mode, setMode] = useState<GenMode>('questions');
   const [chapterId, setChapterId] = useState('');
   const [type, setType] = useState<'MCQ' | 'NUMERICAL'>('MCQ');
   const [difficulty, setDifficulty] = useState<'EASY' | 'MEDIUM' | 'HARD'>('MEDIUM');
   const [count, setCount] = useState(5);
+  const [title, setTitle] = useState('');
+  const [durationMin, setDurationMin] = useState(60);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -49,10 +62,19 @@ export function AiGenerateForm() {
       setError('Choose a chapter first.');
       return;
     }
+    if ((mode === 'dpp' || mode === 'mock_test') && !title.trim()) {
+      setError('Enter a title for the test or DPP.');
+      return;
+    }
     setSubmitting(true);
     setError(null);
+    const payload: Record<string, unknown> = { mode, chapter_id: Number(chapterId), type, difficulty, count };
+    if (mode === 'dpp' || mode === 'mock_test') {
+      payload.title = title.trim();
+      payload.duration_min = durationMin;
+    }
     const { data, error: invokeError } = await supabase.functions.invoke<GenerateResult>('generate-ai-questions', {
-      body: { chapter_id: Number(chapterId), type, difficulty, count },
+      body: payload,
     });
     setSubmitting(false);
 
@@ -60,23 +82,47 @@ export function AiGenerateForm() {
     queryClient.invalidateQueries({ queryKey: ['ai-usage-ledger'] });
 
     if (invokeError || !data || data.status !== 'SUCCEEDED' || typeof data.created !== 'number') {
-      setError('Question generation did not finish. Check the generation jobs below for the reason, then try again.');
+      setError('Generation did not finish. Check the generation jobs below for the reason, then try again.');
       return;
     }
     toast.success(data.message);
+    if (mode === 'questions') {
+      setTitle('');
+    }
   };
+
+  const activeTab = MODE_TABS.find((t) => t.mode === mode)!;
 
   return (
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-base">
-          <Sparkles className="h-4 w-4" aria-hidden /> Generate draft questions
+          <Sparkles className="h-4 w-4" aria-hidden /> AI Studio
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        <p className="text-sm text-navy-600">
-          Generated questions are saved for review. They stay hidden from students until they are reviewed and published.
-        </p>
+        <div className="flex gap-2">
+          {MODE_TABS.map((tab) => {
+            const Icon = tab.icon;
+            return (
+              <button
+                key={tab.mode}
+                onClick={() => { setMode(tab.mode); setError(null); }}
+                className={`flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
+                  mode === tab.mode
+                    ? 'bg-govt-600 text-white'
+                    : 'bg-navy-50 text-navy-700 hover:bg-navy-100'
+                }`}
+              >
+                <Icon className="h-4 w-4" aria-hidden />
+                {tab.label}
+              </button>
+            );
+          })}
+        </div>
+
+        <p className="text-sm text-navy-600">{activeTab.hint}. Questions are saved for review and stay hidden from students until published.</p>
+
         <div className="grid gap-4 sm:grid-cols-2">
           <label className="space-y-1 text-sm text-navy-700 sm:col-span-2">
             Chapter
@@ -113,10 +159,35 @@ export function AiGenerateForm() {
               className={selectClass}
             />
           </label>
+          {(mode === 'dpp' || mode === 'mock_test') && (
+            <>
+              <label className="space-y-1 text-sm text-navy-700 sm:col-span-2">
+                {mode === 'dpp' ? 'DPP title' : 'Mock test title'}
+                <input
+                  type="text"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  placeholder={mode === 'dpp' ? 'e.g. DPP — Rotational Motion' : 'e.g. AI Mock — Kinematics'}
+                  className={selectClass}
+                />
+              </label>
+              <label className="space-y-1 text-sm text-navy-700">
+                Duration (minutes)
+                <input
+                  type="number"
+                  min={5}
+                  max={300}
+                  value={durationMin}
+                  onChange={(e) => setDurationMin(Math.min(300, Math.max(5, Number(e.target.value) || 60)))}
+                  className={selectClass}
+                />
+              </label>
+            </>
+          )}
         </div>
         {error && <p role="alert" className="text-sm text-red-700">{error}</p>}
         <Button variant="primary" onClick={handleGenerate} loading={submitting} disabled={submitting}>
-          Generate for review
+          {mode === 'questions' ? 'Generate questions' : mode === 'dpp' ? 'Create DPP' : 'Create mock test'}
         </Button>
       </CardContent>
     </Card>

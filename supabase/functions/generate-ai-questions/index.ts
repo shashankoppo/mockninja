@@ -28,6 +28,8 @@ const DEFAULT_SETTINGS: ProviderSettings = {
   output_paise_per_million: 21000,
 };
 
+type GenMode = "questions" | "dpp" | "mock_test";
+
 function parseSettings(value: unknown): ProviderSettings | null {
   if (!value || typeof value !== "object") return null;
   const v = value as Record<string, unknown>;
@@ -83,14 +85,19 @@ Deno.serve(async (req: Request) => {
     if (profile?.role !== "ADMIN") return json({ error: "Admin access required" }, 403);
 
     const body = await req.json().catch(() => null);
+    const mode: GenMode = body?.mode === "dpp" || body?.mode === "mock_test" ? body.mode : "questions";
     const chapterId = Number(body?.chapter_id);
     const count = Number(body?.count);
     const type = body?.type;
     const difficulty = body?.difficulty;
+    const title = typeof body?.title === "string" ? body.title.trim() : "";
+    const durationMin = Number(body?.duration_min) || (mode === "dpp" ? 60 : 180);
+
     if (!Number.isInteger(chapterId) || chapterId <= 0) return json({ error: "Choose a chapter" }, 400);
     if (!Number.isInteger(count) || count < 1 || count > 10) return json({ error: "Ask for 1 to 10 questions" }, 400);
     if (!["MCQ", "NUMERICAL"].includes(type)) return json({ error: "Invalid question type" }, 400);
     if (!["EASY", "MEDIUM", "HARD"].includes(difficulty)) return json({ error: "Invalid difficulty" }, 400);
+    if ((mode === "dpp" || mode === "mock_test") && !title) return json({ error: "A title is required for tests and DPPs" }, 400);
 
     const { data: settingRow, error: settingError } = await admin
       .from("platform_settings")
@@ -143,8 +150,10 @@ Deno.serve(async (req: Request) => {
     const skipped = parsed ? parsed.length - valid.length : 0;
 
     let created = 0;
+    let mockTestId: string | null = null;
+
     if (valid.length > 0) {
-      const rows = valid.map((q) => ({
+      const questionRows = valid.map((q) => ({
         chapter_id: chapterId,
         type,
         difficulty,
@@ -164,9 +173,45 @@ Deno.serve(async (req: Request) => {
           reviewed: false,
         },
       }));
-      const { data: inserted, error: insertError } = await admin.from("questions").insert(rows).select("id");
+      const { data: inserted, error: insertError } = await admin.from("questions").insert(questionRows).select("id");
       if (insertError) throw insertError;
       created = inserted?.length ?? 0;
+
+      if (created > 0 && (mode === "dpp" || mode === "mock_test")) {
+        const category = mode === "dpp" ? "DPP" : "AI Generated";
+        const { data: mock, error: mockError } = await admin
+          .from("mock_tests")
+          .insert({
+            title,
+            category,
+            mode: "EXAM",
+            duration_min: durationMin,
+            total_marks: created * 4,
+            access: "FREE",
+            status: "DRAFT",
+            kind: "AI_STUDIO",
+            visibility: "PUBLIC",
+            owner_user_id: userId,
+            marking_scheme: {
+              mcq: { correct: 4, wrong: -1 },
+              numerical: { correct: 4, wrong: 0 },
+            },
+            meta_json: { ai_job_id: jobId, chapter_id: chapterId, difficulty },
+          })
+          .select("id")
+          .single();
+        if (mockError) throw mockError;
+        mockTestId = mock.id;
+
+        const mtqRows = (inserted ?? []).map((q, i) => ({
+          mock_test_id: mockTestId,
+          question_id: q.id,
+          position: i + 1,
+          section: "A",
+        }));
+        const { error: mtqError } = await admin.from("mock_test_questions").insert(mtqRows);
+        if (mtqError) throw mtqError;
+      }
     }
 
     await admin.from("ai_usage_ledger").insert({
@@ -199,12 +244,21 @@ Deno.serve(async (req: Request) => {
     if (finalStatus === "FAILED") {
       return json({ job_id: jobId, status: "FAILED", error: `${errorMessage}. Try again.` }, 502);
     }
+
+    const modeMessage = mode === "questions"
+      ? "Questions were saved for review. They reach students only after they are published."
+      : mode === "dpp"
+        ? `DPP "${title}" created as a draft with ${created} questions. Review and publish it from the mock builder.`
+        : `Mock test "${title}" created as a draft with ${created} questions. Review and publish it from the mock builder.`;
+
     return json({
       job_id: jobId,
       status: "SUCCEEDED",
+      mode,
       created,
       skipped,
-      message: "Questions were saved for review. They reach students only after they are published.",
+      mock_test_id: mockTestId,
+      message: modeMessage,
     });
   } catch (err) {
     console.error("generate-ai-questions failed", err);
