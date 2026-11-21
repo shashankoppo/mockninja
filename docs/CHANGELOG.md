@@ -52,3 +52,9 @@ Append-only project milestones.
 
 - Checkout now sends the signed-in session token when creating a payment order; if the session has expired, the user is asked to sign in again.
 - Admin pages load individually, so the project type-checks with no errors.
+
+## 2026-11-21 — AI generates DPPs and mock tests; performance indexes
+
+- AI Studio can now create DPPs and mock test drafts in addition to standalone questions. Generated tests appear as drafts in the mock builder for review before publishing.
+- Dropped a duplicate database index and added indexes on 10 high-traffic foreign keys.
+- Verification: typecheck clean, build passed, edge function deployed.

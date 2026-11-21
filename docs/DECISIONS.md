@@ -194,3 +194,5 @@
 2026-11-15 | Container exposes its port on the internal network only | Coolify's proxy occupies host 8080 and any host binding from an app can clash with it or other apps. The proxy reaches the container over the internal network through `expose`, so deployment works without port juggling. Default listen port 3000; PORT variable still honored. | ACTIVE
 
 2026-11-15 | Container listens on fixed port 8063; PORT variable removed | A single fixed port removes a whole class of deploy mistakes (empty build vars, proxy clashes). The container exposes internally only, so Coolify's proxy never conflicts. | ACTIVE
+2026-11-21 | AI-generated DPPs and mock tests enter as draft AI_STUDIO tests | Generated tests use kind=AI_STUDIO, status=DRAFT, and link the generated questions. They must be reviewed and published from the mock builder before students see them. | ACTIVE
+2026-11-21 | AI edge function is mode-driven, not separate functions | One function handles questions, DPP, and mock_test modes via a body field, keeping the provider logic and job tracking in one place. | ACTIVE

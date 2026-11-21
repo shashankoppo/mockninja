@@ -1333,3 +1333,14 @@ Added ability for admins to enable/disable email OTP verification from the admin
 - Built: DEPLOYMENT.md now opens with a six-step Coolify walkthrough: push to GitHub, New Resource → Docker Compose, add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY in Environment Variables, set Port exposes to 8063, set the domain with Let's Encrypt, deploy.
 - Key files: Dockerfile, docker/nginx.conf, docker-compose.yml, DEPLOYMENT.md, README.md, .env.example. The nginx.conf.template approach was removed (fixed port needs no startup rendering).
 - Verification: npm run build passed. Docker image not built in this environment; user redeploys in Coolify.
+
+## AI DPP and mock test generation; performance indexes
+
+1. AI Studio now has three modes: generate questions only (existing), create a DPP, or create a mock test. DPP and mock test modes generate questions, insert them as REVIEW, then create a draft mock_test with kind AI_STUDIO and link the questions. The draft appears in the mock builder for review and publishing.
+2. Edge function accepts a `mode` field (`questions`, `dpp`, `mock_test`), plus `title` and `duration_min` for test/DPP modes.
+3. Admin AI form has three tabs (Questions, DPP, Mock Test) with conditional title and duration fields.
+4. Performance migration: dropped the duplicate index on questions.chapter_id, added indexes on 10 high-traffic foreign keys (attempts, mock_test_questions, user_daily_mocks, user_subscriptions, transactions, responses, question_reports, test_feedback, integrity_events, question_bookmarks).
+
+**Verification:** typecheck clean, build passed, edge function deployed. Provider key presence could not be verified.
+
+**Still open:** ~120 performance advisor items (mostly auth_rls_initplan and unused indexes), ~150 lint errors. The auth_rls_initplan items require rewriting 52 policies to use `(select auth.uid())` — safe but large, deferred until needed.
