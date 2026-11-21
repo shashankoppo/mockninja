@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'v2';
+const CACHE_VERSION = 'v3';
 const STATIC_CACHE = `mn-static-${CACHE_VERSION}`;
 const ASSET_CACHE = `mn-assets-${CACHE_VERSION}`;
 

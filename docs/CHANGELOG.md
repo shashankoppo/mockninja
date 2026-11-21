@@ -58,3 +58,10 @@ Append-only project milestones.
 - AI Studio can now create DPPs and mock test drafts in addition to standalone questions. Generated tests appear as drafts in the mock builder for review before publishing.
 - Dropped a duplicate database index and added indexes on 10 high-traffic foreign keys.
 - Verification: typecheck clean, build passed, edge function deployed.
+
+## 2026-11-21 — Deployment hardening
+
+- Added HSTS and Content-Security-Policy headers to nginx config for production security.
+- Suppressed nginx version disclosure in responses.
+- Fixed social share preview image from bolt.new placeholder to local project logo.
+- Bumped service worker cache version to ensure new deploys are served immediately.
