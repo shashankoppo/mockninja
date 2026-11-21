@@ -5,6 +5,10 @@ interface SeoProps {
   description?: string;
   path?: string;
   image?: string;
+  keywords?: string;
+  type?: 'website' | 'article';
+  noindex?: boolean;
+  jsonLd?: Record<string, unknown>;
 }
 
 const SITE_URL = typeof window !== 'undefined' ? window.location.origin : 'https://mockninja.in';
@@ -39,22 +43,52 @@ function setCanonical(href: string) {
   el.setAttribute('href', href);
 }
 
-export function Seo({ title, description, path = '', image }: SeoProps) {
+const JSONLD_ID = 'seo-jsonld-dynamic';
+
+function setJsonLd(data: Record<string, unknown>) {
+  let el = document.getElementById(JSONLD_ID) as HTMLScriptElement | null;
+  if (!el) {
+    el = document.createElement('script');
+    el.id = JSONLD_ID;
+    el.setAttribute('type', 'application/ld+json');
+    document.head.appendChild(el);
+  }
+  el.textContent = JSON.stringify(data);
+}
+
+export function Seo({ title, description, path = '', image, keywords, type = 'website', noindex, jsonLd }: SeoProps) {
   useEffect(() => {
     const fullTitle = title.includes('Mock Ninja') ? title : `${title} — Mock Ninja`;
     document.title = fullTitle;
+
     if (description) setMeta('description', description);
+    if (keywords) setMeta('keywords', keywords);
+
+    setMeta('robots', noindex ? 'noindex, nofollow' : 'index, follow, max-snippet:-1, max-image-preview:large');
+
     setOg('og:title', fullTitle);
     if (description) setOg('og:description', description);
-    setOg('og:type', 'website');
+    setOg('og:type', type);
     setOg('og:url', `${SITE_URL}${path}`);
     setOg('og:site_name', 'Mock Ninja');
+    setOg('og:locale', 'en_IN');
+    setOg('og:locale:alternate', 'hi_IN');
     if (image) setOg('og:image', image);
+
     setMeta('twitter:title', fullTitle);
     if (description) setMeta('twitter:description', description);
     setMeta('twitter:card', 'summary_large_image');
+    if (image) setMeta('twitter:image', image);
+
     setCanonical(`${SITE_URL}${path}`);
-  }, [title, description, path, image]);
+
+    if (jsonLd) {
+      setJsonLd(jsonLd);
+    } else {
+      const existing = document.getElementById(JSONLD_ID);
+      if (existing) existing.remove();
+    }
+  }, [title, description, path, image, keywords, type, noindex, jsonLd]);
 
   return null;
 }

@@ -796,6 +796,85 @@ export function LandingPage() {
         </section>
       )}
 
+      {/* ============ Technical Partner: ELSxGlobal ============ */}
+      <section className="landing-section partner-section py-16 sm:py-20" aria-label="Technical partner">
+        <div className="container-app">
+          <div className="mx-auto mb-10 max-w-2xl text-center">
+            <Badge variant="neutral" className="mb-3 border-vibe-400/30 bg-vibe-500/10 text-vibe-200">
+              <Sparkles className="h-3 w-3" /> Technical Partner
+            </Badge>
+            <h2 className="text-2xl font-bold text-white govt-heading sm:text-3xl">
+              Powered by ELSxGlobal
+            </h2>
+            <p className="mx-auto mt-2 max-w-xl text-navy-400">
+              AI implementation, security infrastructure, and cloud provisioning sponsored by ELSxGlobal — a division of Evolucentsphere Private Limited.
+            </p>
+          </div>
+          <div className="mx-auto grid max-w-4xl gap-6 md:grid-cols-3">
+            <Card className="group border-vibe-500/20 bg-gradient-to-br from-vibe-500/5 to-transparent transition-shadow hover:shadow-card-hover">
+              <CardContent className="p-6">
+                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-vibe-500/15 text-vibe-300">
+                  <BrainCircuit className="h-6 w-6" />
+                </div>
+                <h3 className="font-bold text-white">AI Implementation</h3>
+                <p className="mt-2 text-sm leading-6 text-navy-400">
+                  AI-powered question generation, DPP creation, and mock test assembly through LLM-integrated edge functions. All AI content is reviewed before publishing.
+                </p>
+                <ul className="mt-3 space-y-1.5 text-xs text-navy-500">
+                  <li className="flex items-center gap-2"><CheckCircle2 className="h-3.5 w-3.5 text-teal-400" /> Multi-provider LLM support</li>
+                  <li className="flex items-center gap-2"><CheckCircle2 className="h-3.5 w-3.5 text-teal-400" /> Automated question validation</li>
+                  <li className="flex items-center gap-2"><CheckCircle2 className="h-3.5 w-3.5 text-teal-400" /> Cost-tracked AI usage ledger</li>
+                </ul>
+              </CardContent>
+            </Card>
+            <Card className="group border-teal-500/20 bg-gradient-to-br from-teal-500/5 to-transparent transition-shadow hover:shadow-card-hover">
+              <CardContent className="p-6">
+                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-teal-500/15 text-teal-300">
+                  <ShieldCheck className="h-6 w-6" />
+                </div>
+                <h3 className="font-bold text-white">Security &amp; Provisioning</h3>
+                <p className="mt-2 text-sm leading-6 text-navy-400">
+                  Row-level security policies, server-side grading, SECURITY DEFINER functions, and deny-by-default access control. Infrastructure provisioned for scale and resilience.
+                </p>
+                <ul className="mt-3 space-y-1.5 text-xs text-navy-500">
+                  <li className="flex items-center gap-2"><CheckCircle2 className="h-3.5 w-3.5 text-teal-400" /> Server-side exam grading</li>
+                  <li className="flex items-center gap-2"><CheckCircle2 className="h-3.5 w-3.5 text-teal-400" /> Row-level security on all tables</li>
+                  <li className="flex items-center gap-2"><CheckCircle2 className="h-3.5 w-3.5 text-teal-400" /> Exam integrity &amp; proctoring</li>
+                  <li className="flex items-center gap-2"><CheckCircle2 className="h-3.5 w-3.5 text-teal-400" /> Encrypted payment processing</li>
+                </ul>
+              </CardContent>
+            </Card>
+            <Card className="group border-amber-500/20 bg-gradient-to-br from-amber-500/5 to-transparent transition-shadow hover:shadow-card-hover">
+              <CardContent className="p-6">
+                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-amber-500/15 text-amber-300">
+                  <Database className="h-6 w-6" />
+                </div>
+                <h3 className="font-bold text-white">Cloud Infrastructure</h3>
+                <p className="mt-2 text-sm leading-6 text-navy-400">
+                  Scalable edge functions, real-time data sync, automated daily mock generation, and containerized deployment via Docker. Built for reliability under exam-load.
+                </p>
+                <ul className="mt-3 space-y-1.5 text-xs text-navy-500">
+                  <li className="flex items-center gap-2"><CheckCircle2 className="h-3.5 w-3.5 text-teal-400" /> Docker &amp; Coolify ready</li>
+                  <li className="flex items-center gap-2"><CheckCircle2 className="h-3.5 w-3.5 text-teal-400" /> Automated cron jobs</li>
+                  <li className="flex items-center gap-2"><CheckCircle2 className="h-3.5 w-3.5 text-teal-400" /> Real-time leaderboard sync</li>
+                </ul>
+              </CardContent>
+            </Card>
+          </div>
+          <div className="mt-8 text-center">
+            <a
+              href="https://evolucentsphere.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 text-sm font-medium text-vibe-300 transition-colors hover:text-vibe-200"
+            >
+              Learn more about ELSxGlobal
+              <ArrowRight className="h-4 w-4" />
+            </a>
+          </div>
+        </div>
+      </section>
+
       {/* ============ Final CTA ============ */}
       {isSectionEnabled(homeContent, 'final_cta') && (
       <section className="final-cta-section py-16 sm:py-20">

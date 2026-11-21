@@ -65,3 +65,13 @@ Append-only project milestones.
 - Suppressed nginx version disclosure in responses.
 - Fixed social share preview image from bolt.new placeholder to local project logo.
 - Bumped service worker cache version to ensure new deploys are served immediately.
+
+## 2026-11-21 — Deep SEO overhaul + ELSxGlobal technical partner showcase
+
+- Overhauled index.html with comprehensive meta tags: 30+ keyword targets, Open Graph with locale alternates, Twitter cards, theme-color, color-scheme, apple-touch-icon, manifest link.
+- Added 4 JSON-LD structured data blocks: Organization (with ELSxGlobal as sponsor), WebApplication, FAQPage, BreadcrumbList — all valid schema.org markup for rich search results.
+- Enhanced Seo component: now supports keywords, article type, noindex flag, and dynamic JSON-LD injection per page.
+- Expanded sitemap from 12 to 14 URLs with lastmod dates, image sitemap support, and increased crawl frequency on key pages.
+- Improved robots.txt: explicit Allow rules for all public routes, additional Disallow rules for exam/results/solutions, Crawl-delay, Host directive.
+- Added ELSxGlobal technical partner section to landing page: three cards showcasing AI Implementation, Security & Provisioning, and Cloud Infrastructure with feature checklists and outbound link.
+- Added ELSxGlobal security & AI showcase to Trust page: four detailed cards covering AI question generation, server-side security, exam integrity, and cloud provisioning.

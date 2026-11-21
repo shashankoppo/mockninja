@@ -1,11 +1,29 @@
 User-agent: *
 Allow: /
+Allow: /mock-tests
+Allow: /previous-year-papers
+Allow: /chapters
+Allow: /dpp
+Allow: /revision-vault
+Allow: /pricing
+Allow: /about
+Allow: /trust
+Allow: /faq
+Allow: /contact
 Disallow: /admin
+Disallow: /admin/
 Disallow: /dashboard
 Disallow: /exam
 Disallow: /settings
 Disallow: /billing
 Disallow: /checkout
 Disallow: /dev
+Disallow: /api/
+Disallow: /*/attempt
+Disallow: /*/results
+Disallow: /*/solutions
+
+Crawl-delay: 1
+Host: https://mockninja.in
 
 Sitemap: https://mockninja.in/sitemap.xml
